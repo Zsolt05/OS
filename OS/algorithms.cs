@@ -26,9 +26,60 @@ namespace OS
             return result;
         }
 
-        public string RR(List<ProcessM> processes, int timeSliceLenght)
+        public string[] RR(List<ProcessM> processes, int timeSliceLenght, int numOfBoxes)
         {
-            throw new NotImplementedException();
+            bool done = false;
+            string schedule = "";
+            string answer = "";
+            var sortedList = sortArrayASC(processes);
+            int time = 0;
+            int boxes = 0;
+            while (!done)
+            {
+                bool canrun = false;
+                foreach (var process in sortedList.ToList())
+                {
+                    canrun = false;
+                    if (sortedList.Where(x=>x.TimeToRun <= time).Any())
+                    {
+                        canrun = true;
+                        if (process.RunTime <= timeSliceLenght)
+                        {
+                            schedule += $"{process.Name}[{time}-{time + process.RunTime}]" + (sortedList.Count == 1 ? "" : "->");
+                            answer += $"{process.Name}{(boxes == numOfBoxes ? "" : "->")}";
+                            time += process.RunTime;
+                            boxes++;
+                            sortedList.Remove(process);
+                        }
+                        else
+                        {
+                            schedule += $"{process.Name}[{time}-{time + timeSliceLenght}*]" + (sortedList.Count == 1 ? "" : "->");
+                            answer += $"{process.Name}{(boxes == numOfBoxes ? "" : "->")}";
+                            process.RunTime = process.RunTime - timeSliceLenght;
+                            time += timeSliceLenght;
+                            boxes++;
+                        }
+                    }
+                    if (!canrun)
+                    {
+                        answer += "\"-\"" + (sortedList.Count == 1 && boxes == numOfBoxes ? "" : "->");
+                        time++;
+                        boxes++;
+                    }
+                }
+                if (!canrun)
+                {
+                    time++;
+                    boxes++;
+                    answer += "\"-\"" + (boxes == numOfBoxes ? "" : "->");
+                }
+                if (boxes == numOfBoxes && sortedList.Count == 0)
+                {
+                    done = true;
+                }
+            }
+            string[] result = { schedule, answer };
+            return result;
         }
 
         public string PRIO(List<ProcessM> processes, int timeToStartRun)

@@ -10,7 +10,7 @@ namespace OS
     {
         #region Ütemezés
         string FCFS(List<ProcessM> processes);
-        string RR(List<ProcessM> processes, int timeSliceLenght);
+        string[] RR(List<ProcessM> processes, int timeSliceLenght, int numOfBoxes);
         string PRIO(List<ProcessM> processes, int timeToStartRun);
         string SRTF(List<ProcessM> processes);
         #endregion
